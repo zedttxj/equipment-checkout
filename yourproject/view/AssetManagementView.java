@@ -25,7 +25,7 @@ public class AssetManagementView extends JFrame {
 
     // 1. Top Header & Back Button Panel
     JPanel topPanel = new JPanel(new BorderLayout());
-    JLabel titleLabel = new JLabel("  Asset Management");
+    JLabel titleLabel = new JLabel("Asset Management");
     titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
     JButton backButton = new JButton("Back to Administrative Home");

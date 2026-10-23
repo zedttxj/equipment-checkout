@@ -19,7 +19,7 @@ public class Main {
       view.setVisible(true);
 
       // Launch Reservation View
-      ReservationView reservationView = new ReservationView(repo.findAll(), new ArrayList<>());
+      ReservationView reservationView = new ReservationView(repo.findAll(), new ArrayList<>(), new ArrayList<>());
       new ReservationController(repo, reservationView);
       reservationView.setVisible(true);
     });
