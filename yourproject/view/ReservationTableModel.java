@@ -6,7 +6,7 @@ import yourproject.model.Reservation;
 
 public class ReservationTableModel extends AbstractTableModel {
   private final String[] columnNames = { "ID", "User ID", "Equipment ID", "Start Date", "Type" };
-  private List<Reservation> reservations;
+  protected List<Reservation> reservations;
 
   public ReservationTableModel(List<Reservation> reservations) {
     this.reservations = reservations;
@@ -38,6 +38,10 @@ public class ReservationTableModel extends AbstractTableModel {
       case 4 -> res.getReservationType();
       default -> null;
     };
+  }
+
+  public Reservation getReservationAt(int rowIndex) {
+    return reservations.get(rowIndex);
   }
 
   public void updateData(List<Reservation> newReservations) {

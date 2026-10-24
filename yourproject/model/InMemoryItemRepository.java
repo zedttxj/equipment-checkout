@@ -24,6 +24,34 @@ public class InMemoryItemRepository implements ItemRepository {
   }
 
   @Override
+  public List<Equipment> findAvailable() {
+    // 1. Get IDs of equipment that have an active reservation (endDate is null)
+    List<Integer> activeReservedIds = reservations.stream()
+        .filter(r -> r.getEndDate() == null)
+        .map(Reservation::getEquipmentId)
+        .toList();
+
+    // 2. Return items whose IDs are not currently actively reserved
+    return items.stream()
+        .filter(item -> !activeReservedIds.contains(item.getId()))
+        .toList();
+  }
+
+  @Override
+  public List<Reservation> findActiveReservations() {
+    return reservations.stream()
+        .filter(r -> r.getEndDate() == null)
+        .toList();
+  }
+
+  @Override
+  public List<Reservation> findPastReservations() {
+    return reservations.stream()
+        .filter(r -> r.getEndDate() != null)
+        .toList();
+  }
+
+  @Override
   public Equipment findById(int id) {
     return items.stream().filter(i -> i.getId() == id).findFirst().orElse(null);
   }

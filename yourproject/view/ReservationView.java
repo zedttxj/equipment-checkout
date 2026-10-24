@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.List;
 import yourproject.model.Equipment;
 import yourproject.model.Reservation;
+import yourproject.view.PastReservationTableModel;
 
 public class ReservationView extends JFrame {
   private JTabbedPane tabbedPane;
@@ -19,10 +20,16 @@ public class ReservationView extends JFrame {
   private ReservationTableModel activeReservationsModel;
   private JButton returnButton;
 
+  // Past Reservations Panel Components
+  private JTable pastReservationsTable;
+  private ReservationTableModel pastReservationsModel;
+  private JButton refreshPastButton = new JButton("Refresh");
+
   private JButton refreshButton = new JButton("Refresh");
   private JButton refreshReservationsButton = new JButton("Refresh");
 
-  public ReservationView(List<Equipment> availableEquipment, List<Reservation> activeReservations) {
+  public ReservationView(List<Equipment> availableEquipment, List<Reservation> activeReservations,
+      List<Reservation> pastReservations) {
     setTitle("Asset Reservation System");
     setSize(1000, 700);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,7 +70,7 @@ public class ReservationView extends JFrame {
     reserveButtonPanel.add(refreshButton);
     reservePanel.add(reserveButtonPanel, BorderLayout.SOUTH);
 
-    tabbedPane.addTab("Reserve Equipment", reservePanel);
+    tabbedPane.addTab("Available Equipment", reservePanel);
 
     // --- Tab 2: Active & Past Reservations ---
     JPanel reservationsPanel = new JPanel(new BorderLayout());
@@ -78,6 +85,20 @@ public class ReservationView extends JFrame {
     reservationsPanel.add(returnButtonPanel, BorderLayout.SOUTH);
 
     tabbedPane.addTab("My Reservations", reservationsPanel);
+
+    // --- Tab 3: Past Reservations ---
+    JPanel pastPanel = new JPanel(new BorderLayout());
+    pastReservationsModel = new PastReservationTableModel(pastReservations);
+    pastReservationsTable = new JTable(pastReservationsModel);
+    pastPanel.add(new JScrollPane(pastReservationsTable), BorderLayout.CENTER);
+
+    JPanel pastButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pastButtonPanel.add(refreshPastButton);
+    pastPanel.add(pastButtonPanel, BorderLayout.SOUTH);
+
+    tabbedPane.addTab("Past Reservations", pastPanel);
+
+    add(tabbedPane, BorderLayout.CENTER);
 
     add(tabbedPane, BorderLayout.CENTER);
   }
@@ -116,11 +137,23 @@ public class ReservationView extends JFrame {
     return refreshReservationsButton;
   }
 
+  public JButton getRefreshPastButton() {
+    return refreshReservationsButton;
+  }
+
   public JTable getActiveReservationsTable() {
     return activeReservationsTable;
   }
 
+  public JTable getPastReservationsTable() {
+    return pastReservationsTable;
+  }
+
   public void refreshActiveReservations(List<Reservation> reservationList) {
     activeReservationsModel.updateData(reservationList);
+  }
+
+  public void refreshPastReservations(List<Reservation> reservationList) {
+    pastReservationsModel.updateData(reservationList);
   }
 }
