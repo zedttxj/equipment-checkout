@@ -13,7 +13,11 @@ import java.util.Date;
 public class ReservationController {
   private final ItemRepository repository;
   private final ReservationView view;
+  private Runnable onMutate; // Passable mutate function
+  private boolean isUpdating = false; // Guard flag
 
+  // Constructor that accepts the repository, view, and an optional mutate
+  // callback
   public ReservationController(ItemRepository repository, ReservationView view) {
     this.repository = repository;
     this.view = view;
@@ -43,8 +47,6 @@ public class ReservationController {
 
           // Refresh all tables
           refreshData();
-          view.refreshActiveReservations(repository.findActiveReservations());
-          view.refreshPastReservations(repository.findPastReservations());
         } else {
           JOptionPane.showMessageDialog(view, "Please select an equipment item to reserve.");
         }
@@ -70,43 +72,32 @@ public class ReservationController {
 
           // Refresh all views
           refreshData();
-          view.refreshActiveReservations(repository.findActiveReservations());
-          view.refreshPastReservations(repository.findPastReservations());
         } else {
           JOptionPane.showMessageDialog(view, "Please select an active reservation to return.");
         }
       }
     });
-
-    // Wire up the Refresh button action
-    this.view.getRefreshButton().addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        refreshData();
-        JOptionPane.showMessageDialog(view, "Equipment list refreshed.");
-      }
-    });
-
-    // Wire up the Active Reservations Refresh button action
-    this.view.getRefreshReservationsButton().addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        view.refreshActiveReservations(repository.findActiveReservations());
-        JOptionPane.showMessageDialog(view, "Active reservations list refreshed.");
-      }
-    });
-
-    // Wire up the Past Reservations Refresh button action
-    this.view.getRefreshPastButton().addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        view.refreshPastReservations(repository.findPastReservations());
-        JOptionPane.showMessageDialog(view, "Past reservations list refreshed.");
-      }
-    });
   }
 
   public void refreshData() {
-    view.refreshAvailableEquipment(repository.findAvailable());
+    if (isUpdating)
+      return; // Prevent re-entry loop
+
+    isUpdating = true;
+    try {
+      view.refreshAvailableEquipment(repository.findAvailable());
+      view.refreshActiveReservations(repository.findActiveReservations());
+      view.refreshPastReservations(repository.findPastReservations());
+      // Trigger the custom mutate callback whenever data is refreshed/mutated
+      if (onMutate != null) {
+        onMutate.run();
+      }
+    } finally {
+      isUpdating = false; // Always reset the flag
+    }
+  }
+
+  public void setOnMutate(Runnable onMutate) {
+    this.onMutate = onMutate;
   }
 }
