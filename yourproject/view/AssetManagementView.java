@@ -15,10 +15,13 @@ public class AssetManagementView extends JFrame {
   private JTable equipmentTable;
   private AssetTableModel tableModel;
 
+  // Track current view state for toggling
+  private boolean isTableShowing = true;
+
   public AssetManagementView(List<Equipment> initialData) {
     setTitle("Asset Management");
     setSize(900, 600);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Essential rule (2.7)
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
 
     setLayout(new BorderLayout());
@@ -62,12 +65,12 @@ public class AssetManagementView extends JFrame {
     equipmentTable = new JTable(tableModel);
     JScrollPane tableScrollPane = new JScrollPane(equipmentTable);
 
-    // Setup Placeholder for Calendar View
-    JPanel calendarPlaceholder = new JPanel();
-    calendarPlaceholder.add(new JLabel("[ Calendar View Component ]"));
+    // Setup Calendar View (Replace this panel with your custom calendar or
+    // third-party component like JCalendar)
+    JPanel calendarPanel = createCalendarComponent();
 
     cardPanel.add(tableScrollPane, "TABLE");
-    cardPanel.add(calendarPlaceholder, "CALENDAR");
+    cardPanel.add(calendarPanel, "CALENDAR");
 
     // Combine Center and Card Panel
     JPanel centerWrapper = new JPanel(new BorderLayout());
@@ -75,10 +78,44 @@ public class AssetManagementView extends JFrame {
     centerWrapper.add(cardPanel, BorderLayout.CENTER);
     add(centerWrapper, BorderLayout.CENTER);
 
-    // View toggle listener
+    // View toggle listener (akin to changing view state in web frontend)
     toggleViewButton.addActionListener(e -> {
-      // Toggle logic between table and calendar
+      if (isTableShowing) {
+        cardLayout.show(cardPanel, "CALENDAR");
+        toggleViewButton.setText("Switch to Table View");
+      } else {
+        cardLayout.show(cardPanel, "TABLE");
+        toggleViewButton.setText("Switch to Calendar View");
+      }
+      isTableShowing = !isTableShowing;
     });
+  }
+
+  /**
+   * Helper method to build or return your calendar component.
+   * You can replace this layout with a custom grid or an external library panel.
+   */
+  private JPanel createCalendarComponent() {
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+    JLabel calendarHeader = new JLabel("Reservation Calendar Grid", JLabel.CENTER);
+    calendarHeader.setFont(new Font("Arial", Font.BOLD, 18));
+    panel.add(calendarHeader, BorderLayout.NORTH);
+
+    // Example placeholder grid for days of the month
+    JPanel gridPanel = new JPanel(new GridLayout(0, 7, 5, 5));
+    String[] daysOfWeek = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+    for (String day : daysOfWeek) {
+      gridPanel.add(new JLabel(day, JLabel.CENTER));
+    }
+    // Add sample day cells
+    for (int i = 1; i <= 31; i++) {
+      gridPanel.add(new JButton("Day " + i));
+    }
+
+    panel.add(new JScrollPane(gridPanel), BorderLayout.CENTER);
+    return panel;
   }
 
   public JTextField getSearchField() {
@@ -95,6 +132,10 @@ public class AssetManagementView extends JFrame {
 
   public JButton getEditButton() {
     return editButton;
+  }
+
+  public JButton getToggleViewButton() {
+    return toggleViewButton;
   }
 
   public JTable getEquipmentTable() {
