@@ -77,6 +77,14 @@ public class ReservationController {
         }
       }
     });
+
+    this.view.getTimelinePanel().setOnReservationClickListener(clickedReservation -> {
+      JOptionPane.showMessageDialog(
+          view,
+          "Clicked Reservation ID: " + clickedReservation.getId() + "\nPurpose: " + clickedReservation.getDescription(),
+          "Reservation Details",
+          JOptionPane.INFORMATION_MESSAGE);
+    });
   }
 
   public void refreshData() {
@@ -88,6 +96,7 @@ public class ReservationController {
       view.refreshAvailableEquipment(repository.findAvailable());
       view.refreshActiveReservations(repository.findActiveReservations());
       view.refreshPastReservations(repository.findPastReservations());
+      view.refreshCalendar(repository.findAllReservations());
       // Trigger the custom mutate callback whenever data is refreshed/mutated
       if (onMutate != null) {
         onMutate.run();

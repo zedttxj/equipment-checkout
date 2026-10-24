@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.List;
 import yourproject.model.Equipment;
 import yourproject.model.Reservation;
+import yourproject.view.CustomTimelinePanel;
 
 public class ReservationView extends JFrame {
   private JTabbedPane tabbedPane;
@@ -22,6 +23,9 @@ public class ReservationView extends JFrame {
   // Past Reservations Panel Components
   private JTable pastReservationsTable;
   private ReservationTableModel pastReservationsModel;
+
+  // Calendar Panel Components
+  private CustomTimelinePanel timelinePanel;
 
   public ReservationView(List<Equipment> availableEquipment, List<Reservation> activeReservations,
       List<Reservation> pastReservations) {
@@ -90,7 +94,21 @@ public class ReservationView extends JFrame {
 
     tabbedPane.addTab("Past Reservations", pastPanel);
 
-    add(tabbedPane, BorderLayout.CENTER);
+    // --- Tab 4: Calendar Reservations ---
+    JPanel calendarPanel = new JPanel(new BorderLayout());
+
+    // Combine active and past reservations into a single list
+    List<Reservation> allReservations = new java.util.ArrayList<>();
+    if (activeReservations != null)
+      allReservations.addAll(activeReservations);
+    if (pastReservations != null)
+      allReservations.addAll(pastReservations);
+
+    timelinePanel = new CustomTimelinePanel(allReservations);
+    calendarPanel.add(new JScrollPane(timelinePanel), BorderLayout.CENTER);
+    JScrollPane timelineScrollPane = new JScrollPane(timelinePanel);
+
+    tabbedPane.add("Calendar", timelineScrollPane);
 
     add(tabbedPane, BorderLayout.CENTER);
   }
@@ -116,16 +134,20 @@ public class ReservationView extends JFrame {
     return returnButton;
   }
 
-  public void refreshAvailableEquipment(List<Equipment> equipmentList) {
-    availableTableModel.updateData(equipmentList);
-  }
-
   public JTable getActiveReservationsTable() {
     return activeReservationsTable;
   }
 
   public JTable getPastReservationsTable() {
     return pastReservationsTable;
+  }
+
+  public CustomTimelinePanel getTimelinePanel() {
+    return timelinePanel;
+  }
+
+  public void refreshAvailableEquipment(List<Equipment> equipmentList) {
+    availableTableModel.updateData(equipmentList);
   }
 
   public void refreshActiveReservations(List<Reservation> reservationList) {
@@ -135,4 +157,9 @@ public class ReservationView extends JFrame {
   public void refreshPastReservations(List<Reservation> reservationList) {
     pastReservationsModel.updateData(reservationList);
   }
+
+  public void refreshCalendar(List<Reservation> reservationList) {
+    timelinePanel.updateData(reservationList);
+  }
+
 }
