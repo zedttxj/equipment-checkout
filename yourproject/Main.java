@@ -14,13 +14,23 @@ public class Main {
     SwingUtilities.invokeLater(() -> {
       ItemRepository repo = new InMemoryItemRepository();
 
-      ItemView view = new ItemView(repo.findAll()); // Pass initial items here
-      new ItemController(repo, view);
-      view.setVisible(true);
+      // 1. Initialize Views
+      ItemView itemView = new ItemView(repo.findAll());
+      ReservationView reservationView = new ReservationView(
+          repo.findAvailable(),
+          repo.findActiveReservations(),
+          repo.findPastReservations());
 
-      // Launch Reservation View
-      ReservationView reservationView = new ReservationView(repo.findAll(), new ArrayList<>(), new ArrayList<>());
-      new ReservationController(repo, reservationView);
+      // 2. Initialize Controllers
+      ItemController itemController = new ItemController(repo, itemView);
+      ReservationController reservationController = new ReservationController(repo, reservationView);
+
+      // 3. Cross-wire them so mutations in one window automatically refresh the other
+      itemController.setOnMutate(() -> reservationController.refreshData());
+      reservationController.setOnMutate(() -> itemController.refreshTable());
+
+      // 4. Show Windows
+      itemView.setVisible(true);
       reservationView.setVisible(true);
     });
   }
