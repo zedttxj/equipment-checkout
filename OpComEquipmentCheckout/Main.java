@@ -1,51 +1,67 @@
 package OpComEquipmentCheckout;
 
+import java.util.List;
 import OpComEquipmentCheckout.model.Equipment;
 import OpComEquipmentCheckout.model.InMemoryItemRepository;
 import OpComEquipmentCheckout.model.ItemRepository;
-import OpComEquipmentCheckout.model.Reservation;
-
-import java.util.Date;
 
 public class Main {
   public static void main(String[] args) {
     ItemRepository repo = new InMemoryItemRepository();
 
-    // 1. CREATE (id == 0 triggers auto-ID assignment in save)
-    Equipment camera = repo.save(new Equipment(0, "DSLR Camera", "Canon EOS body with kit lens"));
-    Equipment tripod = repo.save(new Equipment(0, "Tripod", "Lightweight aluminum tripod"));
-    System.out
-        .println("Created: id=" + camera.getId() + ", name=" + camera.getName() + ", desc=" + camera.getDescription());
-    System.out
-        .println("Created: id=" + tripod.getId() + ", name=" + tripod.getName() + ", desc=" + tripod.getDescription());
+    // 1. CREATE
+    System.out.println("=== 1. CREATE RECORDS ===");
+    Equipment e1 = repo.save(new Equipment(0, "Digital Oscilloscope", "Tektronix 100MHz 4-Channel"));
+    System.out.println("Created -> " + e1);
 
-    // 2. LIST (Read all)
-    System.out.println("\n--- All Equipment ---");
-    for (Equipment eq : repo.findAll()) {
-      System.out.println("ID: " + eq.getId() + " | Name: " + eq.getName() + " | Desc: " + eq.getDescription());
+    Equipment e2 = repo.save(new Equipment(0, "Bench Multimeter", "Fluke True-RMS Digital Multimeter"));
+    System.out.println("Created -> " + e2);
+
+    Equipment e3 = repo.save(new Equipment(0, "DC Power Supply", "Rigol 0-30V 5A Triple Output"));
+    System.out.println("Created -> " + e3);
+
+    // Test validation on bad input
+    System.out.println("\n=== VALIDATION CHECK ===");
+    try {
+      repo.save(new Equipment(0, "   ", "Invalid blank name"));
+    } catch (IllegalArgumentException ex) {
+      System.out.println("Rejected invalid equipment as expected: " + ex.getMessage());
     }
 
-    // 3. UPDATE (pass existing id so save replaces it)
-    Equipment updatedCamera = new Equipment(camera.getId(), "DSLR Camera Pro", "Updated description");
-    repo.save(updatedCamera);
-    Equipment fetchedUpdated = repo.findById(camera.getId());
-    System.out.println("\nUpdated Equipment -> ID: " + fetchedUpdated.getId()
-        + " | Name: " + fetchedUpdated.getName()
-        + " | Desc: " + fetchedUpdated.getDescription());
+    // 2. LIST (READ ALL)
+    System.out.println("\n=== 2. LIST ALL RECORDS ===");
+    printItems(repo.findAll());
+
+    // 3. UPDATE
+    System.out.println("\n=== 3. UPDATE RECORD ===");
+    Equipment toUpdate = repo.findById(e2.getId());
+    if (toUpdate != null) {
+      toUpdate.setName("Calibrated Bench Multimeter");
+      toUpdate.setDescription("Fluke 8845A - Calibrated Nov 2026");
+      Equipment updated = repo.save(toUpdate);
+      System.out.println("Updated -> " + updated);
+    }
+
+    System.out.println("\n=== LIST AFTER UPDATE ===");
+    printItems(repo.findAll());
 
     // 4. DELETE
-    System.out.println("\nDeleting Equipment ID " + tripod.getId() + "...");
-    repo.deleteById(tripod.getId());
-    System.out.println("Find deleted by ID: " + repo.findById(tripod.getId()));
+    System.out.println("\n=== 4. DELETE RECORD ===");
+    int deleteId = e1.getId();
+    repo.deleteById(deleteId);
+    System.out.println("Deleted ID #" + deleteId + ". Lookup result: " + repo.findById(deleteId));
 
-    System.out.println("\n--- Remaining Equipment ---");
-    for (Equipment eq : repo.findAll()) {
-      System.out.println("ID: " + eq.getId() + " | Name: " + eq.getName() + " | Desc: " + eq.getDescription());
+    System.out.println("\n=== LIST AFTER DELETE ===");
+    printItems(repo.findAll());
+  }
+
+  private static void printItems(List<Equipment> items) {
+    if (items.isEmpty()) {
+      System.out.println("  (No records found)");
+      return;
     }
-
-    // Optional: Test a reservation & availability check
-    repo.addReservation(new Reservation(1, 101, camera.getId(), new Date(), null, "Standard", "Weekend shoot"));
-    System.out.println("\nActive Reservations: " + repo.findActiveReservations());
-    System.out.println("Available Equipment: " + repo.findAvailable());
+    for (Equipment item : items) {
+      System.out.println("  " + item);
+    }
   }
 }
