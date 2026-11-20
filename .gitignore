@@ -1,2 +1,4 @@
 .env
 yourproject/.env
+*.class
+qt-qml

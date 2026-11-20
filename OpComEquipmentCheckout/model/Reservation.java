@@ -1,4 +1,4 @@
-package yourproject.model;
+package OpComEquipmentCheckout.model;
 
 import java.util.Date;
 
