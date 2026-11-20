@@ -3,13 +3,13 @@ package OpComEquipmentCheckout.model;
 import java.util.List;
 
 public interface ItemRepository {
-  List<Equipment> findAll();
+  List<Item> findAll();
 
-  List<Equipment> findAvailable();
+  List<Item> findAvailable();
 
-  Equipment findById(int id);
+  Item findById(int id);
 
-  Equipment save(Equipment item); // insert if id == 0, else update
+  Item save(Item item); // insert if id == 0, else update
 
   void deleteById(int id);
 

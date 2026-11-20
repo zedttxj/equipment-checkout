@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryItemRepository implements ItemRepository {
-  private final List<Equipment> items = new ArrayList<>();
+  private final List<Item> items = new ArrayList<>();
   private int nextId = 1;
   private List<Reservation> reservations = new ArrayList<>();
 
@@ -19,12 +19,12 @@ public class InMemoryItemRepository implements ItemRepository {
   }
 
   @Override
-  public List<Equipment> findAll() {
+  public List<Item> findAll() {
     return new ArrayList<>(items); // Return a defensive copy (Unit 7)
   }
 
   @Override
-  public List<Equipment> findAvailable() {
+  public List<Item> findAvailable() {
     // 1. Get IDs of equipment that have an active reservation (endDate is null)
     List<Integer> activeReservedIds = reservations.stream()
         .filter(r -> r.getEndDate() == null)
@@ -52,12 +52,12 @@ public class InMemoryItemRepository implements ItemRepository {
   }
 
   @Override
-  public Equipment findById(int id) {
+  public Item findById(int id) {
     return items.stream().filter(i -> i.getId() == id).findFirst().orElse(null);
   }
 
   @Override
-  public Equipment save(Equipment item) {
+  public Item save(Item item) {
     if (item.getId() == 0) {
       item.setId(nextId++);
       items.add(item);

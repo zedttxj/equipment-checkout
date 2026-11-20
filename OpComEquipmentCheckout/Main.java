@@ -1,7 +1,7 @@
 package OpComEquipmentCheckout;
 
 import java.util.List;
-import OpComEquipmentCheckout.model.Equipment;
+import OpComEquipmentCheckout.model.Item;
 import OpComEquipmentCheckout.model.InMemoryItemRepository;
 import OpComEquipmentCheckout.model.ItemRepository;
 
@@ -11,19 +11,19 @@ public class Main {
 
     // 1. CREATE
     System.out.println("=== 1. CREATE RECORDS ===");
-    Equipment e1 = repo.save(new Equipment(0, "Digital Oscilloscope", "Tektronix 100MHz 4-Channel"));
+    Item e1 = repo.save(new Item(0, "Digital Oscilloscope", "Tektronix 100MHz 4-Channel"));
     System.out.println("Created -> " + e1);
 
-    Equipment e2 = repo.save(new Equipment(0, "Bench Multimeter", "Fluke True-RMS Digital Multimeter"));
+    Item e2 = repo.save(new Item(0, "Bench Multimeter", "Fluke True-RMS Digital Multimeter"));
     System.out.println("Created -> " + e2);
 
-    Equipment e3 = repo.save(new Equipment(0, "DC Power Supply", "Rigol 0-30V 5A Triple Output"));
+    Item e3 = repo.save(new Item(0, "DC Power Supply", "Rigol 0-30V 5A Triple Output"));
     System.out.println("Created -> " + e3);
 
     // Test validation on bad input
     System.out.println("\n=== VALIDATION CHECK ===");
     try {
-      repo.save(new Equipment(0, "   ", "Invalid blank name"));
+      repo.save(new Item(0, "   ", "Invalid blank name"));
     } catch (IllegalArgumentException ex) {
       System.out.println("Rejected invalid equipment as expected: " + ex.getMessage());
     }
@@ -34,11 +34,11 @@ public class Main {
 
     // 3. UPDATE
     System.out.println("\n=== 3. UPDATE RECORD ===");
-    Equipment toUpdate = repo.findById(e2.getId());
+    Item toUpdate = repo.findById(e2.getId());
     if (toUpdate != null) {
       toUpdate.setName("Calibrated Bench Multimeter");
       toUpdate.setDescription("Fluke 8845A - Calibrated Nov 2026");
-      Equipment updated = repo.save(toUpdate);
+      Item updated = repo.save(toUpdate);
       System.out.println("Updated -> " + updated);
     }
 
@@ -55,12 +55,12 @@ public class Main {
     printItems(repo.findAll());
   }
 
-  private static void printItems(List<Equipment> items) {
+  private static void printItems(List<Item> items) {
     if (items.isEmpty()) {
       System.out.println("  (No records found)");
       return;
     }
-    for (Equipment item : items) {
+    for (Item item : items) {
       System.out.println("  " + item);
     }
   }
